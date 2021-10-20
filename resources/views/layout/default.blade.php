@@ -9,13 +9,32 @@
     <div class="container">
         <a class="navbar-brand" href="/">微博APP</a>
         <ul class="navbar-nav justify-content-end">
+            @if(Auth::check())
+            <li class="nav-item"><a class="nav-link" href="{{route('help')}}">用户列表</a> </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" id="navbarDropdown">{{Auth::user()->name}}</a>
+
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="{{route('users.show', Auth::user())}}"></a>
+                <a class="dropdown-item" href="#">编辑资料</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" id="logout" href="#">
+                <form action="{{route('logout')}}" method="POST">
+                    {{ csrf_field() }}
+                    {{method_field('DELETE')}}
+                </form>
+                </a>
+            </div>
+            </li>
+            @else
             <li class="nav-item"><a class="nav-link" href="{{route('help')}}">帮助</a> </li>
-            <li class="nav-item"><a class="nav-link" href="{{route('about')}}">关于</a> </li>
+                @endif
         </ul>
     </div>
 </nav>
 @include('shared._message')
 @yield('content')
+<script src="../../js/app.js"></script>
 </body>
 </html>
 <?php
