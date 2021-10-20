@@ -5,13 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Mail;
 class UserController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth',[
-            'except' => ['show', 'create', 'store']
+            'except' => ['show', 'create', 'store', 'confirmEmail']
         ]);
         $this->middleware('guest', [
             'only' => ['create']
@@ -50,7 +50,8 @@ class UserController extends Controller
             'password'=>bcrypt($request->password),
         ]);
         //注册后自动登录
-        Auth::login($user);
+//        Auth::login($user);
+        $this->sendEmailConfirmationTo($user);
         session()->flash('success', '欢迎，您注册');
         return redirect()->route('users.show',[$user]);
     }
@@ -81,5 +82,32 @@ class UserController extends Controller
         $user->update($data);
         session()->flash('success', '个人资料更新成功');
         return redirect()->route('users.show', $user);
+    }
+
+    protected function sendEmailConfirmationTo($user)
+    {
+        $view = 'email.confirm';
+        $data = compact('user');
+        $from = 'guojigang@qq.com';
+        $name='测试';
+        $to = $user->email;
+        $subject = '感谢注册Weibo应用，祝您使用愉快';
+        Mail::send($view, $data, function ($message) use ($from, $name, $to, $subject){
+            $message->from($from, $name)->to($to)->subject($subject);
+        } );
+    }
+
+    /**
+     * @param $token
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function confirmEmail($token){
+        $user = User::where('activation_token', $token)->firstOrFail();
+        $user->activated = true;
+        $user->activation_token = null;
+        $user->save();
+        Auth::login($user);
+        session()->flash('success', '恭喜您激活成功');
+        return redirect()->route('users.show',[$user]);
     }
 }
