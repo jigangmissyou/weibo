@@ -7,6 +7,12 @@ use Illuminate\Support\Facades\Auth;
 
 class SessionController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('guest',[
+            'only' => ['create']
+        ]);
+    }
     //
     public function create()
     {

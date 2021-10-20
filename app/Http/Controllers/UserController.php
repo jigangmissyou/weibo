@@ -8,6 +8,15 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth',[
+            'except' => ['show', 'create', 'store']
+        ]);
+        $this->middleware('guest', [
+            'only' => ['create']
+        ]);
+    }
     //
     public function create()
     {
@@ -44,5 +53,33 @@ class UserController extends Controller
         Auth::login($user);
         session()->flash('success', '欢迎，您注册');
         return redirect()->route('users.show',[$user]);
+    }
+
+    public function edit(User $user)
+    {
+        $this->authorize('update', $user);
+        return view('users.edit', compact('user'));
+    }
+
+    /**
+     * 修改用户资料
+     * @param User $user
+     * @param Request $request
+     */
+    public function update(User $user, Request $request)
+    {
+        $this->authorize('update', $user);
+        $this->validate($request, [
+            'name' => 'required|max:50',
+            'password' => 'nullable|confirmed|min:6'
+        ]);
+        $data = [];
+        $data['name'] = $request->name;
+        if($request->password){
+            $data['password'] = bcrypt($request->password);
+        }
+        $user->update($data);
+        session()->flash('success', '个人资料更新成功');
+        return redirect()->route('users.show', $user);
     }
 }
