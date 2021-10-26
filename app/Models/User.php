@@ -43,6 +43,13 @@ class User extends Authenticatable
         return "http://www.gravatar.com/avatar/$hash?s=$size";
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function feed(){
+        return $this->statuses()->orderBy('created_at','desc');
+    }
+
     public static function boot(){
         parent::boot();
         static::creating(function ($user){
