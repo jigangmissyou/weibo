@@ -12,8 +12,9 @@ class StaticPagesController extends Controller
         $feed_items = [];
         if(Auth::check()){
             $feed_items = Auth::user()->feed()->paginate(30);
+            $user = Auth::user();
         }
-        return view('static_pages/home', compact('feed_items'));
+        return view('static_pages/home', compact('feed_items', 'user'));
     }
 
     public function help()

@@ -60,4 +60,35 @@ class User extends Authenticatable
     public function statuses(){
         return $this->hasMany(Status::class);
     }
+
+    public function follow($user_ids){
+        if(!is_array($user_ids)){
+            $user_ids = compact('user_ids');
+        }
+        $this->followings()->sync($user_ids, false);
+    }
+
+    public function unfollow($user_ids)
+    {
+        if(!is_array($user_ids)){
+            $user_ids = compact('user_ids');
+        }
+        $this->followings()->detach($user_ids);
+    }
+
+    /**判断B是否包含在A的关注人列表上
+     * @param $user_id
+     * @return mixed
+     */
+    public function isFollowing($user_id){
+        return $this->followings->contains($user_id);
+    }
+
+    public function followers(){
+        return $this->belongsToMany(User::Class, 'followers','user_id', 'follower_id');
+    }
+
+    public function followings(){
+        return $this->belongsToMany(User::Class, 'followers','follower_id','user_id');
+    }
 }
