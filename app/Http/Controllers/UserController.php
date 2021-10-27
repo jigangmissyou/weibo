@@ -17,6 +17,12 @@ class UserController extends Controller
             'only' => ['create']
         ]);
     }
+
+    public function index()
+    {
+        $users = User::paginate(10);
+        return view('users.index', compact('users'));
+    }
     //
     public function create()
     {
@@ -63,6 +69,20 @@ class UserController extends Controller
     {
         $this->authorize('update', $user);
         return view('users.edit', compact('user'));
+    }
+
+    public function followings(User $user)
+    {
+        $users = $user->followings()->paginate(30);
+        $title = $user->name. '关注的人';
+        return view('users.show_follow', compact('users','title'));
+    }
+
+    public function followers(User $user)
+    {
+        $users =$user->followers()->paginate(30);
+        $title = $user->name. '的粉丝';
+        return view('users.show_follow', compact('users','title'));
     }
 
     /**

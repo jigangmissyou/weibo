@@ -17,6 +17,11 @@
                 <section class="stats mt-2">
                     @include('shared._stats', ['user'=>Auth::user()])
                 </section>
+                    <section class="status_form">
+                        @foreach($users as $user)
+                            @include('users._follow_form')
+                        @endforeach
+                    </section>
             </aside>
         </div>
     @else

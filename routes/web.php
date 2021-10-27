@@ -24,9 +24,10 @@ Route::post('login','SessionController@store')->name('login');
 Route::get('logout', 'SessionController@destroy')->name('logout');
 Route::get('password/reset',  'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
 Route::post('password/email',  'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
-//Route::get('password/reset/{token}',  'PasswordController@showResetForm')->name('password.reset');
-//Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password_reset');
-//Route::get('password/reset/{token}','Auth\ResetPasswordController@showResetForm')->name('password_reset');
 Route::post('password/reset','Auth\ResetPasswordController@reset')->name('password.reset');
 Route::get('register/confirm/{token}', 'UserController@confirmEmail')->name('confirm_email');
 Route::resource('statuses', 'StatusesController', ['only'=>['store','destroy']]);
+Route::get('users/{user}/followings', 'UserController@followings')->name('users.followings');
+Route::get('users/{user}/follower','UserController@followers')->name('users.followers');  //显示用户的粉丝列表
+Route::post('/users/followers/{user}', 'FollowersController@store')->name('followers.store');
+Route::delete('/users/followers/{user}', 'FollowersController@destroy')->name('followers.destroy');
